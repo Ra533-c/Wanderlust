@@ -1,0 +1,40 @@
+<% layout("/layouts/boilerplates.ejs") %>
+    <% block("title" ,"All Listings") %>
+
+        <body>
+            <h3 class="text-center mt-3 mb-3">All Listings</h3>
+            <!--<form action="/listing/new" method="GET">
+                        <button>Create New Listing</button>
+            </form> -->
+
+            <div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 row-cols-1 justify-content-center">
+                <% for(let listing of allListings){ %>
+                    <div class="card col listing-card" style="width: 20rem;">
+                        <a href="/listing/<%= listing._id %>">
+                            <img src="<%= listing.image %>" class="card-img-top" alt="Listing image"
+                                style="height: 20rem;">
+                        </a>
+                        <!-- <div class="card-img-overlay">abcd</div> -->
+                        <div class="card-body">
+                            <p class="card-text"><b>
+                                    <%= listing.title %>
+                                </b> <br>
+                                <b>&#8377;<%= listing.prize.toLocaleString("en-IN") %>/night</b> <br>
+                                <i>
+                                    <%= listing.description %>
+                                </i>
+                            </p>
+                        </div>
+                    </div>
+                    <% } %>
+            </div>
+
+            <!-- to print all listing => -->
+            <!-- <ul>
+                        <% for(let listing of allListings){ %>
+                            <li><a href="/listing/<%=listing._id%>">
+                                    <%= listing.title %>
+                                </a></li>
+                            <% } %>
+                    </ul> -->
+        </body>
