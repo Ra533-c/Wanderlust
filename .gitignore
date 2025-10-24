@@ -1,0 +1,30 @@
+# Dependencies (Bade folders jo install ho sakte hain)
+node_modules/
+
+# Tooling and editor settings (Aapki personal settings)
+.vscode/
+.qodo/
+
+# Build output (Code se banayi gayi final files)
+dist/
+build/
+
+# Log files (Program ke chalne ka record)
+logs/
+*.log
+
+# Environment variables (Secrets aur passwords)
+.env
+
+# OS-specific files (Windows/Mac ke faltu files)
+.DS_Store
+Thumbs.db
+
+# Sab JSON files ko ignore karo
+*.json
+
+# --- EXCEPTIONS ---
+# Lekin in important JSON files ko ignore MAT karo
+!package.json
+!package-lock.json
+!tsconfig.json
