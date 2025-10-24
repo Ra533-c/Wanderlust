@@ -20,7 +20,7 @@ app.engine("ejs" , ejsMate);
 app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname,"public")));
 app.use(methodOverride("_method"));
-app.use(cookieParser());
+app.use(cookieParser("secretcode"));
 
 app.use((req,res,next)=>{
     console.log(`AJJ KA METHOD : , ${req.method} , and the URL : ${req.originalUrl}`);
@@ -61,22 +61,17 @@ app.get("/", (req, res) => {
 });
 
 // <--------------------------------------------------------------->
-//cookie route =>
-app.get("/getcookies",(req,res,next)=>{
-    res.cookie("greet","hello");
-    res.cookie("greet2","Hello once more");
-    res.cookie("greet3","Hello 3rd times");
-    res.send("Sent you some cookies");
-})
-//read the cookie route =>
-app.get("/readcookies",(req,res,next)=>{
-    console.log("My cookies are =>" , req.cookies);
-    res.send(req.cookies);
+//step1:send signed cookies =>
+app.get("/getsignedcookie",(req,res)=>{
+    res.cookie("made-in","India",{signed:true});
+    res.send("Signed cookie sent successfully");
+});
+app.get("/verify",(req,res)=>{
+    console.log(req.cookies); //for unsigned cookies
+    console.log(req.signedCookies); //for signed cookies
+    res.send(req.signedCookies); // for signed cookies
 });
 // <--------------------------------------------------------------->
-// app.all("*",(req,res,next)=>{
-//     next(new expressError(404,"Page Not Found !")); //ye expressError class ka object h jo utils me bna h
-// });
 
 //iske bjye hm app.use krte h =>
 app.use((req,res,next)=>{
