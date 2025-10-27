@@ -14,6 +14,21 @@ const Review = require("./models/reviews.js");
 const listing = require("./routes/listing.js");
 const review = require("./routes/review.js");
 const cookieParser = require('cookie-parser');
+const session = require("express-session");
+const flash = require("connect-flash");
+
+
+const mongoUrl = 'mongodb://127.0.0.1:27017/wanderlust';
+
+main().then(() => {
+    console.log("Connected To DB");
+}).catch((err) => {
+    console.log(err);
+});
+
+async function main() {
+    await mongoose.connect(mongoUrl);
+}
 
 app.engine("ejs" , ejsMate);
 
@@ -30,18 +45,32 @@ app.use((req,res,next)=>{
 app.set("view engine" , "ejs");
 app.set("views" , path.join(__dirname , "views"));
 
-
-const mongoUrl = 'mongodb://127.0.0.1:27017/wanderlust';
-
-main().then(() => {
-    console.log("Connected To DB");
-}).catch((err) => {
-    console.log(err);
-});
-
-async function main() {
-    await mongoose.connect(mongoUrl);
+const sessionOptions = {
+    secret:"mysecretcode",
+    resave:false,
+    saveUninitialized:true,
+    cookie:{
+        expires:Date.now() + 7*24*60*60*1000, // 7days from now
+        maxAge:7*24*60*60*1000,
+        httpOnly:true,
+        secure:false,
+        path:"/"
+    }
 }
+app.use(session(sessionOptions));
+app.use(flash());
+
+
+//MW to extract the flash msg frm req.session and put it in res.locals
+app.use((req,res,next)=>{
+
+    res.locals.success_msg = req.flash("success");
+    res.locals.error_msg = req.flash("error");
+    
+    // res.locals.delete_msg = req.flash("delete");
+    // res.locals.update_msg = req.flash("update");
+    next();
+});
 
 // <--------------------------------------------------------------->
 // validateReview ,validateListings wala function yahan se hata dein, woh /routes/review.js,listing.js mein chala gaya hai

@@ -1,5 +1,7 @@
 # Dependencies (Bade folders jo install ho sakte hain)
 node_modules/
+experiments/
+
 
 # Tooling and editor settings (Aapki personal settings)
 .vscode/
