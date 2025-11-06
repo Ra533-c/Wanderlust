@@ -11,12 +11,16 @@ const Joi = require('joi');
 const { listingSchema } = require("./schema.js");
 const {reviewsSchema} = require("./schema.js");
 const Review = require("./models/reviews.js");
-const listing = require("./routes/listing.js");
-const review = require("./routes/review.js");
 const cookieParser = require('cookie-parser');
 const session = require("express-session");
 const flash = require("connect-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user.js");
 
+const listingRouter = require("./routes/listing.js");
+const reviewRouter = require("./routes/review.js");
+const userRouter = require("./routes/user.js")
 
 const mongoUrl = 'mongodb://127.0.0.1:27017/wanderlust';
 
@@ -59,16 +63,19 @@ const sessionOptions = {
 }
 app.use(session(sessionOptions));
 app.use(flash());
-
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 //MW to extract the flash msg frm req.session and put it in res.locals
 app.use((req,res,next)=>{
 
     res.locals.success_msg = req.flash("success");
     res.locals.error_msg = req.flash("error");
+    res.locals.currUser = req.user;
     
-    // res.locals.delete_msg = req.flash("delete");
-    // res.locals.update_msg = req.flash("update");
     next();
 });
 
@@ -76,12 +83,23 @@ app.use((req,res,next)=>{
 // validateReview ,validateListings wala function yahan se hata dein, woh /routes/review.js,listing.js mein chala gaya hai
 // <--------------------------------------------------------------->
 
-app.use("/listing" , listing ); // this is mounting =>
-    // Hey app! Agar koi bhi request aati hai jiska path /listing se shuru hota hai..."...toh uss request ko handle karne ke liye (listing) variable (jo 'mini-app' hai) ke paas bhej do.
+// app.get("/demouser",async(req,res)=>{
+//     let fakeUser = new User({
+//         email:"fake@123gmail.com",
+//         username:"fakeUser1"
+//     });
+//     let registeredUser = await User.register(fakeUser,"abc123"); // User.register is a method provided by passport-local-mongoose to create a new user and hash their password.
+//     res.send(registeredUser);
+// });
 
 // <--------------------------------------------------------------->
 
-app.use("/listing/:id/reviews",review);
+app.use("/listing" , listingRouter ); // this is mounting =>
+// Hey app! Agar koi bhi request aati hai jiska path /listing se shuru hota hai..."...toh uss request ko handle karne ke liye (listing) variable (jo 'mini-app' hai) ke paas bhej do.
+
+app.use("/listing/:id/reviews",reviewRouter);
+
+app.use("/",userRouter);
 
 // <--------------------------------------------------------------->
 //root route =>

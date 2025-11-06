@@ -21,14 +21,18 @@ const listingSchema = new Schema({
             type:Schema.Types.ObjectId,
             ref:"review"
         }
-    ]
+    ],
+    owner:{
+        type:Schema.Types.ObjectId,
+        ref:"User"
+    }
 }, { strict: true });
 
 listingSchema.post("findOneAndDelete" , async (listing) =>{
     if(listing){
         await Review.deleteMany({_id:{$in:listing.reviews}});
     }
-})
+});
 
 //Aapka yeh statement 100% correct hai. Hum yahi kehna chahte hain. listing.reviews ek "shopping list" hai jismein unn sabhi reviews ki ID likhi hai jinhe delete karna hai. deleteMany uss list ko leta hai aur Review collection mein jaakar uss list mein maujood har ID waale document ko dhoondh kar delete kar deta hai.
 
