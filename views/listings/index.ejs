@@ -3,16 +3,138 @@
     
         <body>
            
-            <h3 class="text-center mt-3 mb-3">All Listings</h3>
+            <!-- <h3 class="text-center mt-3 mb-3">All Listings</h3> -->
+            <style>
+                #filters{
+                    display:flex;
+                    /* flex-wrap:wrap; */
+                    flex-wrap: nowrap; /* Items ko ek hi line mein rakhega */
+                    overflow-x: auto; /* Horizontal scroll enable karega */
+                    padding-bottom: 10px; /* Scrollbar ke liye thodi jagah */
+                    justify-content: center;
+                    align-items: center;
+                    gap:10px;
+                    
+                    /* Sticky properties */
+                    position: sticky;
+                    top: 80px; /* Navbar ke theek neeche stick hoga */
+                    background-color: white; /* Taaki scroll hone wala content iske peeche se na dikhe */
+                    z-index: 10; /* Taaki yeh doosre elements ke upar rahe */
+                    /* padding: 10px 0; */
+                }
+                .filter{
+                    text-align: center;
+                    margin-right: 2rem;
+                    margin-top: 1.5rem;
+                    opacity:0.7;
+                }
+                .filter:hover{
+                    opacity:1;
+                    cursor: pointer;
+                }
+                .filter p {
+                    font-size:0.8rem;
+                }
+                #filters a{
+                    text-decoration: none;
+                    color:inherit;
+                }
+            </style>
+            <div id="filters">
+
+                <a href="/listing">
+                    <div class="filter">
+                        <div>
+                            <i class="fa-solid fa-globe"></i>
+                            <p>All</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/listing?category=trending">
+                    <div class="filter">
+                        <div>
+                            <i class="fa-solid fa-fire"></i>
+                            <p>Trending</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/listing?category=iconic cities">
+                    <div class="filter">
+                        <div>
+                            <i class="fa-solid fa-mountain-city"></i>
+                            <p>Iconic Cities</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/listing?category=mountains">
+                    <div class="filter">
+                        <div>
+                            <i class="fa-solid fa-mountain"></i>
+                            <p>Mountains</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/listing?category=castles">
+                    <div class="filter">
+                        <div>
+                            <i class="fa-solid fa-chess-rook"></i>
+                            <p>Castles</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/listing?category=camping">
+                    <div class="filter">
+                        <div>
+                            <i class="fa-solid fa-campground"></i>
+                            <p>Camping</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/listing?category=amazing pools">
+                    <div class="filter">
+                        <div>
+                            <i class="fa-solid fa-person-swimming"></i>
+                            <p>Amazing Pools</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/listing?category=farms">
+                    <div class="filter">
+                        <div>
+                            <i class="fa-solid fa-cow"></i>
+                            <p>Farms</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/listing?category=others">
+                    <div class="filter">
+                        <div>
+                            <i class="fa-solid fa-shuffle"></i>
+                            <p>Others</p>
+                        </div>
+                    </div>
+                </a>
+                
+
+            </div>
+
             <!--<form action="/listing/new" method="GET">
                         <button>Create New Listing</button>
             </form> -->
 
-            <div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 row-cols-1 justify-content-center">
+            <div class="row row-cols-lg-3 row-cols-md-3 mt-3 row-cols-sm-1 row-cols-1 justify-content-center">
                 <% for(let listing of allListings){ %>
                     <div class="card col listing-card" style="width: 20rem;">
                         <a href="/listing/<%= listing._id %>">
-                            <img src="<%= listing.image %>" class="card-img-top" alt="Listing image"
+                            <img src="<%= listing.image.url %>" class="card-img-top" alt="Listing image"
                                 style="height: 20rem;">
                         </a>
                         <!-- <div class="card-img-overlay">abcd</div> -->

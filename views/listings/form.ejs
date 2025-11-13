@@ -5,7 +5,7 @@
         <div class="col-8 offset-2" style="padding: 20px;">
             <br><br>
             <h3 ><b>Creating a New Listing...</b></h3><br>
-            <form action="/listing" method="POST" novalidate class="needs-validation">
+            <form action="/listing" method="POST" novalidate class="needs-validation" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="title" class="from-label">Title</label>
                     <input id="title" class="form-control" type="text" name="listing[title]" placeholder="Enter Title" required>
@@ -23,10 +23,14 @@
                 <br>
                 <br>
                 <div class="mb-3">
-                    <label for="image" class="form-label">Image</label>
-                    <input id="image"t type="text"  class="form-control" name="listing[image]" placeholder="Enter Img URL/Link">
-                    <div class="valid-feedback">Looks good!</div>
-                    <div class="invalid-feedback">Please add URL of image.</div>
+                    <label for="image" class="form-label">Upload Image</label>
+                    <input 
+                        id="image"t 
+                        type="file"  
+                        class="form-control" 
+                        name="listing[image]" 
+                        required
+                    />
                 </div>
                 <br>
                 <br>
@@ -54,10 +58,27 @@
                 </div>
                 <br>
                 <br>
+
+                <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select name="listing[category]" id="category" class="form-control" required>
+                    <option value="" disabled selected>Select a category</option>
+                    <option value="trending">Trending</option>
+                    <option value="iconic cities">Iconic Cities</option>
+                    <option value="mountains">Mountains</option>
+                    <option value="castles">Castles</option>
+                    <option value="amazing pools">Amazing Pools</option>
+                    <option value="farms">Farms</option>
+                    <option value="others">Others</option>
+                </select>
+                <div class="invalid-feedback">Please select a category.</div>
+                </div>
+                <br>
+                <br>
+
                 <button class="btn btn-dark add-btn w-100">Add</button>
                 <br><br>
             </form>
         </div>
     </div>
 </body>
-

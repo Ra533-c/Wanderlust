@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Review  = require("./reviews.js");
+const Review = require("./reviews.js");
 const Schema = mongoose.Schema;
 
 const listingSchema = new Schema({
@@ -9,28 +9,43 @@ const listingSchema = new Schema({
     },
     description: String,
     image: {
-        type: String,
-        default: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwallpapers.com%2Fgreenery&psig=AOvVaw019rHJwJsvjHfaXaPQcs40&ust=1758261723571000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCJicgcHR4Y8DFQAAAAAdAAAAABAE0",
-        set: (v) => v === "" ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwallpapers.com%2Fgreenery&psig=AOvVaw019rHJwJsvjHfaXaPQcs40&ust=1758261723571000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCJicgcHR4Y8DFQAAAAAdAAAAABAE" : v,
+        url: String,
+        filename: String
     },
-    prize:Number ,
+    prize: Number,
     location: String,
     country: String,
-    reviews:[
+    reviews: [
         {
-            type:Schema.Types.ObjectId,
-            ref:"review"
+            type: Schema.Types.ObjectId,
+            ref: "review"
         }
     ],
-    owner:{
-        type:Schema.Types.ObjectId,
-        ref:"User"
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+    },
+    geometry: {
+        type: {
+            type: String, // Don't do `{ location: { type: String } }`
+            enum: ['Point'], // 'location.type' must be 'Point'
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    },
+    category:{
+        type:String,
+        enum:["mountains","farms","iconic cities","trending","others","castles","amazing pools",],
+        required:true
     }
 }, { strict: true });
 
-listingSchema.post("findOneAndDelete" , async (listing) =>{
-    if(listing){
-        await Review.deleteMany({_id:{$in:listing.reviews}});
+listingSchema.post("findOneAndDelete", async (listing) => {
+    if (listing) {
+        await Review.deleteMany({ _id: { $in: listing.reviews } });
     }
 });
 
