@@ -13,7 +13,7 @@ module.exports.index = async (req, res) => {
     }else{
         allListings = await Listing.find({});
     }
-    console.log(`allListings by category:${category} =>, ${allListings}`);
+    // console.log(`allListings by category:${category} =>, ${allListings}`);
     res.render("listings/index.ejs", { allListings });
 };
 
@@ -101,4 +101,25 @@ module.exports.delete = async (req, res) => {
     await Listing.findByIdAndDelete(id);
     req.flash("success", "Listing Deleted Successfully !");
     res.redirect("/listing");
+};
+
+module.exports.search = async (req, res) => {
+    let { searchQuery } = req.query;
+    let allListings; 
+
+    if (searchQuery) {
+        let searchRegex = new RegExp(searchQuery, "i");
+        allListings = await Listing.find({
+            $or: [
+                { title: { $regex: searchRegex } },
+                { description: { $regex: searchRegex } },
+                { location: { $regex: searchRegex } },
+                { category: { $regex: searchRegex } },
+                { country: { $regex: searchRegex } },
+            ]
+        });
+    } else {
+        allListings = await Listing.find({});
+    }
+    res.render("listings/index.ejs", { allListings });
 };

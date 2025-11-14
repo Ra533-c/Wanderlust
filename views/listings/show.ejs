@@ -7,6 +7,13 @@
     const listingById  = <%- JSON.stringify(listingById) %>;
 </script>
 
+<style>
+    #map{
+        height:340px; /* Ek default height */
+        width: 100%;   /* Hamesha apne container ki poori width le */
+    }
+</style>
+
 <body>
     <div class="row mt-3">
         <!-- 1. Content ko center kiya using offset-2 -->
@@ -15,7 +22,12 @@
             <h3><b>Listings details</b></h3><br>
             <!-- 2. Extra col-6 wrappers hata diye -->
             <div class="card listing-card">
-                <img src="<%= listingById.image.url %>" class="card-img-top show-img" alt="listing image">
+                <img 
+                    src="<%= listingById.image.url %>" 
+                    class="card-img-top show-img" 
+                    alt="listing image" 
+                    style="height: 40vh; object-fit: cover;"
+                >
                 <div class="card-body">
                     <p class="card-text">
                         <p><b><%= listingById.title %></b></p>
@@ -98,8 +110,7 @@
 
             <div class="col-12 mb-5">
                 <h5>Where you'll be </h5>
-                <div id="map">
-                </div>
+                <div id="map"></div>
             </div>
 
         </div>

@@ -18,6 +18,7 @@ const {reviewsSchema} = require("./schema.js");
 const Review = require("./models/reviews.js");
 const cookieParser = require('cookie-parser');
 const session = require("express-session");
+const MongoStore = require('connect-mongo');
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -27,19 +28,7 @@ const upload = multer({dest:"uploads/"});
 
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
-const userRouter = require("./routes/user.js")
-
-const mongoUrl = 'mongodb://127.0.0.1:27017/wanderlust';
-
-main().then(() => {
-    console.log("Connected To DB");
-}).catch((err) => {
-    console.log(err);
-});
-
-async function main() {
-    await mongoose.connect(mongoUrl);
-}
+const userRouter = require("./routes/user.js");
 
 app.engine("ejs" , ejsMate);
 
@@ -56,7 +45,32 @@ app.use((req,res,next)=>{
 app.set("view engine" , "ejs");
 app.set("views" , path.join(__dirname , "views"));
 
+const dbUrl = process.env.ATLAS_URL || 'mongodb://127.0.0.1:27017/wanderlust';
+
+async function main(){
+    try {
+        await mongoose.connect(dbUrl);
+        console.log("Connected to DB");
+    } catch (err) {
+        console.error("Database connection error:", err);
+        process.exit(1); // Exit if DB connection fails
+    }
+}
+
+const store = MongoStore.create({
+    mongoUrl:dbUrl,
+    crypto:{
+        secret:"mysecretcode"
+    },
+    touchAfter:24*60*60,
+});
+
+store.on("error" , ()=>{
+    console.log("Error in  Mongo-Session-Store")
+});
+
 const sessionOptions = {
+    store:store,
     secret:"mysecretcode",
     resave:false,
     saveUninitialized:true,
@@ -68,6 +82,7 @@ const sessionOptions = {
         path:"/"
     }
 }
+
 app.use(session(sessionOptions));
 app.use(flash());
 app.use(passport.initialize());
@@ -100,6 +115,10 @@ app.use((req,res,next)=>{
 // });
 
 // <--------------------------------------------------------------->
+
+// Search Route
+const listingController = require("./controllers/listing.js");
+app.get("/search", wrapasync(listingController.search));
 
 app.use("/listing" , listingRouter ); // this is mounting =>
 // Hey app! Agar koi bhi request aati hai jiska path /listing se shuru hota hai..."...toh uss request ko handle karne ke liye (listing) variable (jo 'mini-app' hai) ke paas bhej do.
@@ -151,6 +170,16 @@ app.use((err, req, res, next) => {
 });
 // <--------------------------------------------------------------->
 
-app.listen(8080, () => {
-    console.log("server is listening at port 8080 ");
-});
+const startServer = async () => {
+    try {
+        await main(); // Wait for the database to connect
+
+        app.listen(8080, () => {
+            console.log("Server is listening at port 8080");
+        });
+    } catch (error) {
+        console.error("Failed to start server:", error);
+    }
+};
+
+startServer();
