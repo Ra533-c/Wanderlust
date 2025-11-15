@@ -60,7 +60,7 @@ async function main(){
 const store = MongoStore.create({
     mongoUrl:dbUrl,
     crypto:{
-        secret:"mysecretcode"
+        secret: process.env.SECRET
     },
     touchAfter:24*60*60,
 });
@@ -71,7 +71,7 @@ store.on("error" , ()=>{
 
 const sessionOptions = {
     store:store,
-    secret:"mysecretcode",
+    secret:process.env.SECRET,
     resave:false,
     saveUninitialized:true,
     cookie:{
@@ -102,19 +102,6 @@ app.use((req,res,next)=>{
 });
 
 // <--------------------------------------------------------------->
-// validateReview ,validateListings wala function yahan se hata dein, woh /routes/review.js,listing.js mein chala gaya hai
-// <--------------------------------------------------------------->
-
-// app.get("/demouser",async(req,res)=>{
-//     let fakeUser = new User({
-//         email:"fake@123gmail.com",
-//         username:"fakeUser1"
-//     });
-//     let registeredUser = await User.register(fakeUser,"abc123"); // User.register is a method provided by passport-local-mongoose to create a new user and hash their password.
-//     res.send(registeredUser);
-// });
-
-// <--------------------------------------------------------------->
 
 // Search Route
 const listingController = require("./controllers/listing.js");
@@ -126,12 +113,6 @@ app.use("/listing" , listingRouter ); // this is mounting =>
 app.use("/listing/:id/reviews",reviewRouter);
 
 app.use("/",userRouter);
-
-// <--------------------------------------------------------------->
-//root route =>
-// app.get("/", (req, res) => {
-//     res.send("Hi , I am Root dir");
-// });
 
 // <--------------------------------------------------------------->
 //step1:send signed cookies =>
