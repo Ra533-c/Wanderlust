@@ -103,6 +103,11 @@ app.use((req,res,next)=>{
 
 // <--------------------------------------------------------------->
 
+// Root route - Redirects to /listing
+app.get("/", (req, res) => {
+    res.redirect("/listing");
+});
+
 // Search Route
 const listingController = require("./controllers/listing.js");
 app.get("/search", wrapasync(listingController.search));

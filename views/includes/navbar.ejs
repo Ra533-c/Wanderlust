@@ -1,5 +1,6 @@
 <style>
-  /* style for search button */
+  /* --- Navbar ke liye Custom CSS --- */
+
 
   .search-btn{
     background-color: #fe424d;
@@ -17,30 +18,86 @@
     font-size: 1rem;
   }
 
+
+  /* 
+    Mobile par dikhne wale side-menu (Offcanvas) ki width ko custom set karna.
+    Humne selector ko .offcanvas#offcanvasNavbar likha hai taaki yeh rule zyada specific ho aur aasani se override na ho.
+  */
+
+  .offcanvas#offcanvasNavbar {
+    /* 
+      --bs-offcanvas-width ek Bootstrap CSS variable hai. Hum iski default value (400px) ko override karke 280px kar rahe hain.
+      !important yeh sunishchit karta hai ki hamari style hi apply ho, chahe Bootstrap ki default style kitni bhi strong ho.
+    */
+    --bs-offcanvas-width: 280px !important; /* !important yeh sunishchit karta hai ki hamari style hi apply ho. */
+    width: var(--bs-offcanvas-width);
+  }
 </style>
+
+<!-- 
+  NAVBAR START
+  -------------
+  Yeh hamari website ka main navigation bar hai.
+-->
+
+<!-- 
+  .navbar: Yeh basic navbar component banata hai.
+  .navbar-expand-md: Navbar 'md' (medium) screen size (768px) ya usse badi screen par expand (faila hua) rahega. Usse choti screen par collapse ho jayega aur hamburger icon dikhega.
+  .navbar-light: Yeh batata hai ki navbar ka background light hai, isliye text aur icons dark color ke dikhne chahiye (hamburger icon ko visible banane ke liye zaroori).
+  .bg-body-light: Navbar ko ek halka background color deta hai.
+  .border-bottom: Navbar ke neeche ek halki si border line add karta hai.
+  .sticky-top: Scroll karne par navbar page ke top par chipka rahega.
+-->
 
 <nav class="navbar navbar-expand-md navbar-light bg-body-light border-bottom sticky-top">
   <div class="container-fluid">
+    <!-- Navbar Brand: Website ka logo ya naam. Yeh 'Explore' page (/listing) par link karta hai. -->
+
     <a class="navbar-brand" href="/listing"><i class="fa-regular fa-compass"></i></a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
-      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <!-- Hamburger Button: Yeh button sirf mobile view (md se choti screen) par dikhega. -->
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+      aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
+    <!-- Collapsible content for Desktop -->
+
+    <!-- 
+      DESKTOP NAVBAR CONTENT
+      ---------------------
+      Yeh div desktop view ke saare links (Explore, Search, User Links) ko contain karta hai.
+      - .collapse .navbar-collapse: Yeh Bootstrap ki default classes hain jo content ko collapsible banati hain.
+      - .d-md-flex: 'md' (medium) screen ya usse badi screen par isko 'display: flex' banata hai. Mobile par yeh hide rehta hai.
+      - .justify-content-between: Iske andar ke 3 child divs (left, center, right) ke beech mein barabar space daalta hai.
+      - .w-100: Iski width ko 100% set karta hai taaki 'justify-content-between' sahi se kaam kare.
+    -->
+
+    <div class="collapse navbar-collapse d-md-flex justify-content-between w-100" id="navbarNavAltMarkup">
+      <!-- 1. Left Side: Explore Link -->
+
+      <!-- 
+        .d-none: Yeh element by default (mobile par) chupa rahega.
+        .d-md-flex: 'md' screen ya badi par 'display: flex' ho jayega, yaani dikhne lagega.
+      -->
+
+      <div class="navbar-nav d-none d-md-flex">
         <a class="nav-link" href="/listing">Explore</a>
       </div>
 
-      <div class="navbar-nav ms-auto">
+      <!-- 2. Center: Search Form (Sirf Desktop par dikhega) -->
+
+      <div class="navbar-nav d-none d-md-flex">
         <form class="d-flex" role="search" action="/search" method="GET">
-          <input class="form-control me-2 search-input" name="searchQuery" type="search" placeholder="Search here" aria-label="Search">
+          <input class="form-control me-2 search-input" name="searchQuery" type="search" placeholder="Search destinations" aria-label="Search">
           <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
         </form>
       </div>
 
-      <div class="navbar-nav ms-auto">
+      <!-- 3. Right Side: User links (Sirf Desktop par dikhega) -->
+
+      <div class="navbar-nav d-none d-md-flex">
         <a class="nav-link" href="/listing/new">Add New One</a>
         <% if(!currUser){ %>
           <a class="nav-link" aria-current="page" href="/signup"><b>SignUp</b></a>
@@ -53,3 +110,54 @@
     </div>
   </div>
 </nav>
+
+<!-- 
+  MOBILE SEARCH FORM
+  ------------------
+  Yeh search form sirf mobile view par navbar ke neeche dikhega.
+  - .d-md-none: Yeh 'div' 'md' (medium) screen ya usse badi screen par 'display: none' (gayab) ho jayega.
+  - .pt-2 .pb-3: Upar se thodi (padding-top) aur neeche se thodi zyada (padding-bottom) jagah deta hai.
+-->
+
+<div class="container-fluid d-md-none bg-body-light pt-2 pb-3 border-bottom">
+  <form class="d-flex" role="search" action="/search" method="GET">
+    <input class="form-control me-2 search-input" name="searchQuery" type="search" placeholder="Search destinations" aria-label="Search">
+    <!-- Mobile par search button mein sirf icon rakha hai taaki jagah bach sake. -->
+    <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+  </form>
+</div>
+
+<!-- 
+  OFFCANVAS MOBILE MENU
+  ---------------------
+  Yeh woh side-menu hai jo mobile par hamburger icon click karne par khulta hai.
+  - .offcanvas: Isse Offcanvas component banata hai.
+  - .offcanvas-end: Menu screen ke right side ('end') se aayega.
+  - tabindex="-1": Accessibility ke liye zaroori hai, focus management mein help karta hai.
+  - id="offcanvasNavbar": Yeh ID hamburger button ke 'data-bs-target' se match karti hai, jisse Bootstrap ko pata chalta hai ki kaun sa menu kholna hai.
+-->
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+  <!-- Offcanvas Header: Menu ka top section, jisme title aur close button hota hai. -->
+
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Wanderlust</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <!-- Offcanvas Body: Menu ka main content area, jisme saare links hain. -->
+
+  <div class="offcanvas-body">
+    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+      <li class="nav-item">
+        <a class="nav-link" href="/listing/new">Add New One</a>
+      </li>
+      <% if(!currUser){ %>
+        <li class="nav-item"><a class="nav-link" aria-current="page" href="/signup"><b>SignUp</b></a></li>
+        <li class="nav-item"><a class="nav-link" href="/login"><b>Login</b></a></li>
+      <% } %>
+      <% if(currUser){ %>
+        <li class="nav-item"><a class="nav-link" href="/logout"><b>Logout</b></a></li>
+      <% } %>
+    </ul>
+  </div>
+</div>
