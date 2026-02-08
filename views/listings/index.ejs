@@ -1,15 +1,16 @@
 <% layout("/layouts/boilerplates.ejs") %>
     <% block("title" ,"All Listings") %>
-    
+
         <body>
-           
+
             <!-- <h3 class="text-center mt-3 mb-3">All Listings</h3> -->
             <style>
                 .filter-bar {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    gap: 2rem; /* Ensures a minimum gap of 2rem between items */
+                    gap: 2rem;
+                    /* Ensures a minimum gap of 2rem between items */
                     position: sticky;
                     top: 80px;
                     background-color: white;
@@ -17,35 +18,45 @@
                     padding: 8px 2rem;
                     border-bottom: 1px solid #f0f0f0;
                 }
-                #filters{
-                    display:flex;
-                    flex-wrap: nowrap; /* Items ko ek hi line mein rakhega */
-                    overflow-x: auto; /* Horizontal scroll enable karega */
+
+                #filters {
+                    display: flex;
+                    flex-wrap: nowrap;
+                    /* Items ko ek hi line mein rakhega */
+                    overflow-x: auto;
+                    /* Horizontal scroll enable karega */
                 }
-                .filter{
+
+                .filter {
                     text-align: center;
                     margin-right: 2rem;
                     margin-top: 1.5rem;
-                    opacity:0.7;
+                    opacity: 0.7;
                 }
-                .filter:hover{
-                    opacity:1;
+
+                .filter:hover {
+                    opacity: 1;
                     cursor: pointer;
                 }
+
                 .filter p {
-                    font-size:0.8rem;
+                    font-size: 0.8rem;
                 }
-                #filters a{
+
+                #filters a {
                     text-decoration: none;
-                    color:inherit;
+                    color: inherit;
                 }
-                
-                .tax-toggle{
-                    border: 1px solid #e0e0e0; /* Halki border */
-                    padding: 0.5rem 1rem; /* Sahi padding */
+
+                .tax-toggle {
+                    border: 1px solid #e0e0e0;
+                    /* Halki border */
+                    padding: 0.5rem 1rem;
+                    /* Sahi padding */
                     border-radius: 12px;
                 }
-                .taxInfo{
+
+                .taxInfo {
                     display: none;
                 }
             </style>
@@ -148,22 +159,27 @@
 
             <div class="row row-cols-lg-3 row-cols-md-3 mt-3 row-cols-sm-1 row-cols-1 justify-content-center">
                 <% for(let listing of allListings){ %>
-                    <div class="card col listing-card" style="width: 20rem;">
+                    <div class="card col listing-card border-none group bg-transparent transition-all duration-300 hover:shadow-2xl hover:rounded-3xl rounded-3xl"
+                        style="width: 20rem;">
                         <a href="/listing/<%= listing._id %>">
                             <img src="<%= listing.image.url %>" class="card-img-top" alt="Listing image"
                                 style="height: 20rem;">
                         </a>
                         <!-- <div class="card-img-overlay">abcd</div> -->
-                        <div class="card-body">
-                            <p class="card-text"><b>
+                        <div class="card-body px-1 py-3 group-hover:text-zinc-900">
+                            <p class="card-text">
+                                <b class="text-lg block text-zinc-800">
                                     <%= listing.title %>
-                                </b> <br>
-                                <b>&#8377;<%= listing.prize.toLocaleString("en-IN") %>/night</b>
-                                <i class="taxInfo">&nbsp;+18% GST</i>
+                                </b>
+                                <span class="text-zinc-600 font-medium">
+                                    &#8377;<%= listing.prize.toLocaleString("en-IN") %> <span
+                                            class="font-normal">/night</span>
+                                </span>
+                                <i class="taxInfo text-red-500 font-semibold italic text-sm">&nbsp;+18% GST</i>
                                 <br>
-                                <i>
+                                <span class="text-zinc-500 text-sm line-clamp-1 mt-1">
                                     <%= listing.description %>
-                                </i>
+                                </span>
                             </p>
                         </div>
                     </div>
@@ -182,16 +198,16 @@
 
 
 
-<script>
-    let taxSwitch = document.getElementById("flexSwitchCheckDefault");
-    taxSwitch.addEventListener("click",()=>{
-        let taxInfo = document.getElementsByClassName("taxInfo");
-        for(info of taxInfo){
-            if(info.style.display != "inline"){
-                info.style.display = "inline";
-            }else{
-                info.style.display = "none";
-            }
-        }
-    });
-</script>
+        <script>
+            let taxSwitch = document.getElementById("flexSwitchCheckDefault");
+            taxSwitch.addEventListener("click", () => {
+                let taxInfo = document.getElementsByClassName("taxInfo");
+                for (info of taxInfo) {
+                    if (info.style.display != "inline") {
+                        info.style.display = "inline";
+                    } else {
+                        info.style.display = "none";
+                    }
+                }
+            });
+        </script>
