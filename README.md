@@ -3,6 +3,15 @@
 WanderLust ek full-stack web application hai jo users ko sundar locations dhundhne, unhe list karne aur reviews dene ki suvidha deta hai. Yeh project **Airbnb** se inspired hai! 🚀
 
 ---
+## 📸 Screenshots & Demo
+
+### 🏠 Home Page
+<!-- Niche wali line me image ka link dalein (Method 1 ya 2 se) -->
+![Wanderlust Home Page] <img width="1920" height="1080" alt="Screenshot 2026-02-20 162404" src="https://github.com/user-attachments/assets/89959eb8-8c2e-4d85-a6da-82d1d77f5d7b" />
+
+### 🎥 Project Demo
+Uploading Recording 2026-02-20 163906.mp4…
+---
 
 ## 🛠 Tech Stack (Humne kya-kya use kiya?)
 
