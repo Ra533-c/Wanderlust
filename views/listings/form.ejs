@@ -1,39 +1,33 @@
 <% layout("/layouts/boilerplates.ejs") %>
 <% block("title" , "Create New Listing") %>
 <body>
-    <div class="row">
-        <div class="col-8 offset-2" style="padding: 20px;">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6" style="padding: 20px;">
             <br><br>
             <h3 ><b>Creating a New Listing...</b></h3><br>
-            <form action="/listing" method="POST" novalidate class="needs-validation" enctype="multipart/form-data">
+            <form class="create-listing-form" action="/listing" method="POST" novalidate class="needs-validation" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="title" class="from-label">Title</label>
                     <input id="title" class="form-control" type="text" name="listing[title]" placeholder="Enter Title" required>
                     <div class="valid-feedback">Looks good!</div>
                     <div class="invalid-feedback">Please enter a title.</div>
                 </div>
-                <br>
-                <br>
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
                     <textarea id="description" class="form-control" name="listing[description]" placeholder="Enter Description" required></textarea>
                     <div class="valid-feedback">Looks good!</div>
                     <div class="invalid-feedback">Please Enter a description.</div>
                 </div>
-                <br>
-                <br>
                 <div class="mb-3">
                     <label for="image" class="form-label">Upload Image</label>
                     <input 
-                        id="image"t 
+                        id="image"
                         type="file"  
                         class="form-control" 
                         name="listing[image]" 
                         required
                     />
                 </div>
-                <br>
-                <br>
                 <div class="row">
                     <div class="mb-3 col-md-4">
                         <label for="prize" class="form-label" >Prize</label>
@@ -48,20 +42,15 @@
                         <div class="invalid-feedback">Please enter a country.</div>
                     </div>
                 </div>
-                <br>
-                <br>
                 <div class="mb-3"> 
                     <label for="location" class="form-label">Location</label>
                     <input id="location" class="form-control" required name="listing[location]" placeholder="Enter Location">
                     <div class="valid-feedback">Looks good!</div>
                     <div class="invalid-feedback">Please enter a Location.</div>
                 </div>
-                <br>
-                <br>
-
                 <div class="mb-3">
                 <label for="category" class="form-label">Category</label>
-                <select name="listing[category]" id="category" class="form-control" required>
+                <select name="listing[category]" id="category" class="form-select" required>
                     <option value="" disabled selected>Select a category</option>
                     <option value="trending">Trending</option>
                     <option value="iconic cities">Iconic Cities</option>
@@ -73,11 +62,7 @@
                 </select>
                 <div class="invalid-feedback">Please select a category.</div>
                 </div>
-                <br>
-                <br>
-
                 <button class="btn btn-dark add-btn w-100">Add</button>
-                <br><br>
             </form>
         </div>
     </div>

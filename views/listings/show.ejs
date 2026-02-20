@@ -31,7 +31,7 @@
                 <div class="card-body">
                     <p class="card-text">
                         <p><b><%= listingById.title %></b></p>
-                        <i><b>Owned by : </b><%= listingById.owner.username %>~</i>
+                        <i><b>Owned by : </b><%= listingById.owner ? listingById.owner.username : "Unknown" %>~</i>
                         <p><i><%= listingById.description %></i></p>
                         <p><b>&#8377;<%= listingById.prize.toLocaleString("en-IN") %></b></p>
                         <p><b><%= listingById.location %></b></p>

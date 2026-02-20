@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 const initData = require("./data.js");
 const listing = require("../models/listing.js");
+const User = require("../models/user.js");
 
 const mongoUrl = 'mongodb://127.0.0.1:27017/wanderlust';
 
 main().then(() => {
-    console.log("Connected To DB");
+    console.log("✅ Connected To Local DB (wanderlust)");
 }).catch((err) => {
-    console.log(err);
+    console.log("❌ DB Connection Error:", err);
 });
 
 async function main() {
@@ -15,13 +16,48 @@ async function main() {
 }
 
 const initializeDB = async () => {
-    await listing.deleteMany({});
-    // Add owner to each listing object
-    const listingsWithOwner = initData.data.map((obj) => ({
-        ...obj, owner: "690c7b18abf8b4486497c198" 
-    }));
-    await listing.insertMany(listingsWithOwner);
-    console.log("data initilized successfully");
-}
+    try {
+        // Step 1: Clear old data
+        await listing.deleteMany({});
+        await User.deleteMany({});
+        console.log("🗑️  Old listings and users deleted.");
+
+        // Step 2: Create 2 real users using passport-local-mongoose register()
+        const user1 = new User({ username: "rajnikant", email: "rajni@example.com" });
+        const registeredUser1 = await User.register(user1, "password123");
+        console.log(`✅ User 1 created: ${registeredUser1.username} (ID: ${registeredUser1._id})`);
+
+        const user2 = new User({ username: "khusboo", email: "khusboo@example.com" });
+        const registeredUser2 = await User.register(user2, "khusboo123");
+        console.log(`✅ User 2 created: ${registeredUser2.username} (ID: ${registeredUser2._id})`);
+
+        // Step 3: Add owner to each listing - split between 2 users
+        const listingsWithOwner = initData.data.map((obj, index) => ({
+            ...obj,
+            owner: index % 2 === 0 ? registeredUser1._id : registeredUser2._id
+            // Even index listings → user1, Odd index listings → user2
+        }));
+
+        // Step 4: Insert all listings
+        await listing.insertMany(listingsWithOwner);
+        console.log(`✅ ${listingsWithOwner.length} listings inserted successfully!`);
+
+        // Step 5: Verify
+        const userCount = await User.countDocuments();
+        const listingCount = await listing.countDocuments();
+        console.log(`\n📊 Final Count:`);
+        console.log(`   Users: ${userCount}`);
+        console.log(`   Listings: ${listingCount}`);
+        console.log(`\n🎉 Database initialized successfully!`);
+        console.log(`\n📝 Login Credentials:`);
+        console.log(`   User 1: username="rajnikant", password="password123"`);
+        console.log(`   User 2: username="khusboo", password="khusboo123"`);
+
+        process.exit(0);
+    } catch (err) {
+        console.log("❌ Error during initialization:", err);
+        process.exit(1);
+    }
+};
 
 initializeDB();

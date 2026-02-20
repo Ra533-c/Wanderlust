@@ -3,27 +3,23 @@
 
 <body>
     <div class="row">
-        <div class="col-8 offset-2 mt-3" style="padding: 20px;">
+        <div class="col-12 col-md-8 col-lg-6 justify-content-center" style="padding: 20px;">
         <br>
             <h3><b>Edit Your Listing...</b></h3>
             <br><br>
-            <form enctype="multipart/form-data" method="POST" action="/listing/<%= listingById._id %>?_method=PUT" novalidate class="needs-validation">
+            <form class="create-listing-form" enctype="multipart/form-data" method="POST" action="/listing/<%= listingById._id %>?_method=PUT" novalidate class="needs-validation">
                 <div class="mb-3">
                     <label for="title" class="form-label" class="from-label"">Title</label>
                     <input id="title" required type="text" class="form-control" name="listing[title]" value="<%= listingById.title %>">
                     <div class="valid-feedback">Looks good!</div>
                     <div class="invalid-feedback">Please enter a title.</div>
                 </div>
-                <br>
-                <br>
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
                     <textarea id="description"  required class="form-control" name="listing[description]" ><%= listingById.description %></textarea>
                     <div class="valid-feedback">Looks good!</div>
                     <div class="invalid-feedback">Please enter a description.</div>
                 </div>
-                <br>
-                <br>
                 <div class="mb-3">
                     <p>Original Listing Image:</p>
                     <img src="<%= originalImgUrl %>"  >
@@ -38,16 +34,12 @@
                         value="<%= listingById.image %>"
                     />
                 </div>
-                <br>
-                <br>
                 <div class="mb-3">
                     <label for="prize" class="form-label">Prize</label>
                     <input type="Number" id="prize" required class="form-control" name="listing[prize]" value="<%= listingById.prize %>">
                     <div class="valid-feedback">Looks good!</div>
                     <div class="invalid-feedback">Please enter a Prize.</div>
                 </div>
-                <br>
-                <br>
                 <div class="row">
                     <div class="mb-3 col-md-6">
                         <label for="location" class="form-label">Location</label>
@@ -62,11 +54,9 @@
                         <div class="invalid-feedback">Please enter a country.</div>
                     </div>
                 </div>
-                <br>
-                <br>
                 <div class="mb-3">
                     <label for="category" class="form-label">Category</label>
-                    <select name="listing[category]" id="category" class="form-control" required>
+                    <select name="listing[category]" id="category" class="form-select" required>
                         <!-- Yahan listingById use hoga kyunki edit route se yahi variable aata hai -->
                         <option value="trending" <%= listingById.category === 'trending' ? 'selected' : '' %>>Trending</option>
                         <option value="iconic cities" <%= listingById.category === 'iconic cities' ? 'selected' : '' %>>Iconic Cities</option>
@@ -78,7 +68,6 @@
                     </select>
                     <div class="invalid-feedback">Please select a category.</div>
                 </div>
-                <br>
                 <button class="btn btn-dark add-btn w-100">Edit</button>
             </form>
         </div>

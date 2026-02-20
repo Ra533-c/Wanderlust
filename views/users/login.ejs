@@ -1,37 +1,27 @@
 <% layout("/layouts/boilerplates.ejs") %>
 
 <div class="row mt-3">
-    <h1 class="col-6 offset-3">Login on Wanderlust</h1>
-    <div class="col-6 offset-3">
-        <form action="/login" method="POST" class="needs-validation" novalidate>
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input 
-                    type="text" 
-                    class="form-control"  
-                    placeholder="Enter your username" 
-                    name="username" 
-                    id="username" 
-                    required
-                />
-                <div class="valid-feedback">Looks good!</div>
-                <div class="invalid-feedback">Please enter a username.</div>
-            </div>
+    <!-- Same responsive sizing: Mobile pe full, Desktop pe centered -->
+    <div class="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+        <h1 class="mb-4 text-center">Login on Wanderlust</h1>
+        
+        <!-- Login Form Structure -->
+        <form action="/login" method="POST" class="form needs-validation" novalidate>
+            <p class="title">Welcome Back</p>
+            <p class="message">Login to access your dashboard.</p>
+            
+            <label>
+                <input class="input" name="username" type="text" required />
+                <span>Username</span>
+            </label>
 
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input 
-                    type="password" 
-                    class="form-control"  
-                    placeholder="Enter your password" 
-                    name="password" 
-                    id="password" 
-                    required
-                />
-                <div class="valid-feedback">Looks good!</div>
-                <div class="invalid-feedback">Please enter a password.</div>
-            </div>
-            <button class="btn btn-dark mt-3 mb-5 w-100" type="submit">Login</button>
+            <label>
+                <input class="input" type="password" name="password" required />
+                <span>Password</span>
+            </label>
+            
+            <button class="submit">Login</button>
+            <p class="signin">Don't have an account? <a href="/signup">Sign up</a></p>
         </form>
     </div>
 </div>
