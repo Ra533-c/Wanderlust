@@ -3,7 +3,7 @@ const initData = require("./data.js");
 const listing = require("../models/listing.js");
 const User = require("../models/user.js");
 
-const mongoUrl = 'mongodb://127.0.0.1:27017/wanderlust';
+const mongoUrl = 'mongodb+srv://doyouknow32386_db_user:d26q8DHJBEqTNyEc@wanderlust.fb7limu.mongodb.net/wanderlust';
 
 main().then(() => {
     console.log("✅ Connected To Local DB (wanderlust)");
@@ -24,11 +24,11 @@ const initializeDB = async () => {
 
         // Step 2: Create 2 real users using passport-local-mongoose register()
         const user1 = new User({ username: "rajnikant", email: "rajni@example.com" });
-        const registeredUser1 = await User.register(user1, "password123");
+        const registeredUser1 = await User.register(user1, "abc");
         console.log(`✅ User 1 created: ${registeredUser1.username} (ID: ${registeredUser1._id})`);
 
         const user2 = new User({ username: "khusboo", email: "khusboo@example.com" });
-        const registeredUser2 = await User.register(user2, "khusboo123");
+        const registeredUser2 = await User.register(user2, "abc");
         console.log(`✅ User 2 created: ${registeredUser2.username} (ID: ${registeredUser2._id})`);
 
         // Step 3: Add owner to each listing - split between 2 users
@@ -50,8 +50,8 @@ const initializeDB = async () => {
         console.log(`   Listings: ${listingCount}`);
         console.log(`\n🎉 Database initialized successfully!`);
         console.log(`\n📝 Login Credentials:`);
-        console.log(`   User 1: username="rajnikant", password="password123"`);
-        console.log(`   User 2: username="khusboo", password="khusboo123"`);
+        console.log(`   User 1: username="rajnikant", password="abc"`);
+        console.log(`   User 2: username="khusboo", password="abc"`);
 
         process.exit(0);
     } catch (err) {

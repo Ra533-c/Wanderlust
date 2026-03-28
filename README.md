@@ -13,6 +13,18 @@ WanderLust ek full-stack web application hai jo users ko sundar locations dhundh
 Uploading Recording 2026-02-20 163906.mp4…
 ---
 
+## 📸 Screenshots & Demo
+
+### 🏠 Home Page
+<!-- Niche wali line me image ka link dalein (Method 1 ya 2 se) -->
+![Wanderlust Home Page](https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60)
+
+### 🎥 Project Demo
+<!-- Video drag and drop karne par yahan link aayega -->
+*(Yahan apni video drag & drop karein)*
+
+---
+
 ## 🛠 Tech Stack (Humne kya-kya use kiya?)
 
 Project ko banane ke liye yeh modern technologies use ki gayi hain:
