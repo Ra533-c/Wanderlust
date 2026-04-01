@@ -1,0 +1,6 @@
+﻿M	controllers/listing.js
+M	controllers/users.js
+M	public/css/style.css
+M	views/includes/navbar.ejs
+M	views/layouts/boilerplates.ejs
+M	views/listings/index.ejs

@@ -1,0 +1,1017 @@
+﻿diff --git a/controllers/listing.js b/controllers/listing.js
+index 33218f4..1e61f5c 100644
+--- a/controllers/listing.js
++++ b/controllers/listing.js
+@@ -1,125 +1,129 @@
+ const Listing = require("../models/listing.js");
+-const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
++const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
+ const mapToken = process.env.MAP_TOKEN;
+ const geocodingClient = mbxGeocoding({ accessToken: mapToken });
+ 
+ module.exports.index = async (req, res) => {
+-    let allListings = await Listing.find({});
+-    let {category} = req.query;
+-
+-    if(category){
+-         // Agar category hai, to sirf uss category ki listings find karo
+-        allListings = await Listing.find({ category: category });
+-    }else{
+-        allListings = await Listing.find({});
+-    }
+-    // console.log(`allListings by category:${category} =>, ${allListings}`);
+-    res.render("listings/index.ejs", { allListings });
++  let allListings = await Listing.find({});
++  let { category } = req.query;
++
++  if (category) {
++    // Agar category hai, to sirf uss category ki listings find karo
++    allListings = await Listing.find({ category: category });
++  } else {
++    allListings = await Listing.find({});
++  }
++  // console.log(`allListings by category:${category} =>, ${allListings}`);
++  res.render("listings/index.ejs", { allListings });
+ };
+ 
+ module.exports.new = async (req, res) => {
+-    console.log(`req.user: ${req.user}`);
+-    res.render("listings/form.ejs", { listing: {} });
++  console.log(`req.user: ${req.user}`);
++  res.render("listings/form.ejs", { listing: {}, showSearch: false });
+ };
+ 
+ module.exports.post = async (req, res, next) => {
+-    let coordinates = await geocodingClient.forwardGeocode({
+-        query: req.body.listing.location,
+-        limit: 1,
++  let coordinates = await geocodingClient
++    .forwardGeocode({
++      query: req.body.listing.location,
++      limit: 1,
+     })
+-        .send();
++    .send();
+ 
+-    // console.log(coordinates.body.features[0].geometry);
+-    // res.send("DONE !");
++  // console.log(coordinates.body.features[0].geometry);
++  // res.send("DONE !");
+ 
+-    let url = req.file.path;
+-    let { filename } = req.file;
++  let url = req.file.path;
++  let { filename } = req.file;
+ 
+-    let newListing = new Listing(req.body.listing);
+-    newListing.owner = req.user._id;
+-    newListing.image = { url, filename };
++  let newListing = new Listing(req.body.listing);
++  newListing.owner = req.user._id;
++  newListing.image = { url, filename };
+ 
+-    newListing.geometry = coordinates.body.features[0].geometry;
++  newListing.geometry = coordinates.body.features[0].geometry;
+ 
+-    let savedListing = await newListing.save();
+-    console.log(savedListing);
++  let savedListing = await newListing.save();
++  console.log(savedListing);
+ 
+-    req.flash("success", "Successfully Created a new Listing !");
+-    res.redirect("/listing");
++  req.flash("success", "Successfully Created a new Listing !");
++  res.redirect("/listing");
+ };
+ 
+ module.exports.show = async (req, res) => {
+-    let { id } = req.params;
+-    const listingById = await Listing.findById(id)
+-        .populate({
+-            path: "reviews",
+-            populate: ({
+-                path: "author",
+-            })
+-        })
+-        .populate("owner");
+-
+-    if (!listingById) {
+-        req.flash("error", "Listing you requested for doesn't exist !");
+-        return res.redirect("/listing");
+-    }
+-    console.log("listingById =>", listingById);
+-    res.render("listings/show.ejs", { listingById });
++  let { id } = req.params;
++  const listingById = await Listing.findById(id)
++    .populate({
++      path: "reviews",
++      populate: {
++        path: "author",
++      },
++    })
++    .populate("owner");
++
++  if (!listingById) {
++    req.flash("error", "Listing you requested for doesn't exist !");
++    return res.redirect("/listing");
++  }
++  console.log("listingById =>", listingById);
++  res.render("listings/show.ejs", { listingById });
+ };
+ 
+ module.exports.edit = async (req, res) => {
+-    let { id } = req.params;
+-    const listingById = await Listing.findById(id);
+-    if (!listingById) {
+-        req.flash("error", "Listing you requested for doesn't exist !");
+-        return res.redirect("/listing");
+-    }
+-
+-    let originalImgUrl = listingById.image.url;
+-    originalImgUrl = originalImgUrl.replace("/upload", "/upload/e_blur:200,c_fit,h_250,w_250");
+-
+-    res.render("listings/edit.ejs", { listingById, originalImgUrl });
++  let { id } = req.params;
++  const listingById = await Listing.findById(id);
++  if (!listingById) {
++    req.flash("error", "Listing you requested for doesn't exist !");
++    return res.redirect("/listing");
++  }
++
++  let originalImgUrl = listingById.image.url;
++  originalImgUrl = originalImgUrl.replace(
++    "/upload",
++    "/upload/e_blur:200,c_fit,h_250,w_250",
++  );
++
++  res.render("listings/edit.ejs", { listingById, originalImgUrl });
+ };
+ 
+ module.exports.update = async (req, res) => {
+-    let { id } = req.params;
+-    let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing });
+-
+-    if (typeof req.file !== "undefined") {
+-        let url = req.file.path;
+-        let filename = req.file.filename;
+-        listing.image = { url, filename };
+-        await listing.save();
+-    }
+-
+-    req.flash("success", "Listing Updated Successfully !");
+-    res.redirect(`/listing/${id}`);
++  let { id } = req.params;
++  let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing });
++
++  if (typeof req.file !== "undefined") {
++    let url = req.file.path;
++    let filename = req.file.filename;
++    listing.image = { url, filename };
++    await listing.save();
++  }
++
++  req.flash("success", "Listing Updated Successfully !");
++  res.redirect(`/listing/${id}`);
+ };
+ 
+ module.exports.delete = async (req, res) => {
+-    let { id } = req.params; // Corrected line
+-    await Listing.findByIdAndDelete(id);
+-    req.flash("success", "Listing Deleted Successfully !");
+-    res.redirect("/listing");
++  let { id } = req.params; // Corrected line
++  await Listing.findByIdAndDelete(id);
++  req.flash("success", "Listing Deleted Successfully !");
++  res.redirect("/listing");
+ };
+ 
+ module.exports.search = async (req, res) => {
+-    let { searchQuery } = req.query;
+-    let allListings; 
+-
+-    if (searchQuery) {
+-        let searchRegex = new RegExp(searchQuery, "i");
+-        allListings = await Listing.find({
+-            $or: [
+-                { title: { $regex: searchRegex } },
+-                { description: { $regex: searchRegex } },
+-                { location: { $regex: searchRegex } },
+-                { category: { $regex: searchRegex } },
+-                { country: { $regex: searchRegex } },
+-            ]
+-        });
+-    } else {
+-        allListings = await Listing.find({});
+-    }
+-    res.render("listings/index.ejs", { allListings });
+-};
+\ No newline at end of file
++  let { searchQuery } = req.query;
++  let allListings;
++
++  if (searchQuery) {
++    let searchRegex = new RegExp(searchQuery, "i");
++    allListings = await Listing.find({
++      $or: [
++        { title: { $regex: searchRegex } },
++        { description: { $regex: searchRegex } },
++        { location: { $regex: searchRegex } },
++        { category: { $regex: searchRegex } },
++        { country: { $regex: searchRegex } },
++      ],
++    });
++  } else {
++    allListings = await Listing.find({});
++  }
++  res.render("listings/index.ejs", { allListings });
++};
+diff --git a/controllers/users.js b/controllers/users.js
+index 409d274..47ce95b 100644
+--- a/controllers/users.js
++++ b/controllers/users.js
+@@ -1,7 +1,7 @@
+ const User = require("../models/user");
+ 
+ module.exports.signupGET = (req, res) => {
+-    res.render("users/signup.ejs");
++    res.render("users/signup.ejs", { showSearch: false });
+ };
+ 
+ module.exports.signupPost = async (req, res, next) => {
+@@ -24,7 +24,7 @@ module.exports.signupPost = async (req, res, next) => {
+ };
+ 
+ module.exports.loginGET = (req, res) => {
+-    res.render("users/login.ejs");
++    res.render("users/login.ejs", { showSearch: false });
+ };
+ 
+ module.exports.loginPOST = async (req, res) => {
+diff --git a/public/css/style.css b/public/css/style.css
+index f71fb2d..b63ee05 100644
+--- a/public/css/style.css
++++ b/public/css/style.css
+@@ -1,170 +1,195 @@
+ * {
+-    font-family: "Poppins", sans-serif;
++  font-family: "Poppins", sans-serif;
+ }
+ 
+ body {
+-    display: flex;
+-    flex-direction: column;
+-    min-height: 100vh;
++  display: flex;
++  flex-direction: column;
++  min-height: 100vh;
+ }
+ 
+ body .container {
+-    flex: 1;
++  flex: 1;
+ }
+ 
+ .navbar {
+-    height: 5rem;
+-    background: rgba(255, 255, 255, 0.4);
+-    backdrop-filter: blur(8px);
+-    -webkit-backdrop-filter: blur(8px);
+-    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
++  height: 3.5rem;
++  /* Desktop pe 3.5rem */
++  background: rgba(255, 255, 255, 0.4);
++  /* Thoda zyada opaque */
++  backdrop-filter: blur(8px);
++  -webkit-backdrop-filter: blur(8px);
++  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
++}
++
++/* Navbar mobile responsive */
++@media (max-width: 767px) {
++  .navbar {
++    height: auto;
++    /* Auto height ÔÇö content ke hisab se */
++    padding: 0.4rem 0.8rem;
++    /* Compact padding */
++  }
++
++  .fa-compass {
++    font-size: 1.2rem;
++    /* Chhota compass icon */
++  }
++
++  .navbar-toggler {
++    padding: 0.2rem 0.4rem;
++    /* Compact hamburger */
++    font-size: 0.9rem;
++  }
+ }
+ 
++
+ .fa-compass {
+-    color: #fe424d;
+-    font-size: 2rem;
++  color: #fe424d;
++  font-size: 1.6rem;
+ }
+ 
+ .nav-link {
+-    color: #222222 !important;
+-
++  color: #222222 !important;
++  font-size: 0.9rem;
++  font-weight: 500;
+ }
+ 
+ /* footer */
+ .f-info-links a {
+-    text-decoration: none;
+-    margin-left: 1rem;
+-    margin-right: 1rem;
++  text-decoration: none;
++  margin-left: 1rem;
++  margin-right: 1rem;
+ }
+ 
+ .f-info-links a:hover {
+-    text-decoration: underline;
++  text-decoration: underline;
+ }
+ 
+ .f-info-links {
+-    width: 100%;
+-    display: flex;
+-    align-items: center;
+-    justify-content: center;
++  width: 100%;
++  display: flex;
++  align-items: center;
++  justify-content: center;
+ 
+ }
+ 
+ .f-info-socials {
+-    width: 100%;
+-    font-size: 1.3rem;
+-    display: flex;
+-    align-items: center;
+-    justify-content: center;
++  width: 100%;
++  font-size: 1.3rem;
++  display: flex;
++  align-items: center;
++  justify-content: center;
+ 
+-    /* margin-right:1rem;
++  /* margin-right:1rem;
+     margin-left:1rem; */
+ }
+ 
+ .f-info-socials i {
+-    margin-right: 0.5rem;
+-    margin-left: 0.5rem;
++  margin-right: 0.5rem;
++  margin-left: 0.5rem;
+ }
+ 
+ .f-info {
+-    display: flex;
+-    min-height: 8rem;
+-    background:linear-gradient(135deg, #a29496, #826368);
+-    flex-wrap: wrap;
+-    color:white;
+-    padding: 2rem;
+-    justify-content: center;
+-    align-items: center;
+-    text-align: center;
++  display: flex;
++  min-height: 8rem;
++  background: linear-gradient(135deg, #a29496, #826368);
++  flex-wrap: wrap;
++  color: white;
++  padding: 2rem;
++  justify-content: center;
++  align-items: center;
++  text-align: center;
+ }
+ 
+ .icon {
+-    display: flex;
+-    align-items: center;
+-    justify-content: center;
++  display: flex;
++  align-items: center;
++  justify-content: center;
+ 
+ }
+ 
+ /* cards */
+ 
+ .listing-card {
+-    border: none !important;
+-    margin: 0 1rem 2rem 1rem;
+-    overflow: hidden;
+-    border-radius: 16px !important;
+-    transition: transform 0.3s ease , box-shadow 0.3s ease ;
+-    cursor: pointer;
+-    color: black !important;
++  border: none !important;
++  margin: 0 1rem 2rem 1rem;
++  overflow: hidden;
++  border-radius: 16px !important;
++  transition: transform 0.3s ease, box-shadow 0.3s ease;
++  cursor: pointer;
++  color: black !important;
+ }
+ 
+ .listing-card:hover {
+-  transform : translateY(-7px);
+-  box-shadow:0 20px 40px rgba(0,0,0,0.1)
++  transform: translateY(-7px);
++  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1)
+ }
+ 
+-.listing-card .card-img-top{
++.listing-card .card-img-top {
+   border-radius: 16px !important;
+   aspect-ratio: 4/3;
+   object-fit: cover;
+-  transition:transform 0.5s ease;
++  transition: transform 0.5s ease;
+ }
+ 
+-.listing-card:hover .card-img-top{
+-  transform:scale(1.05);
++.listing-card:hover .card-img-top {
++  transform: scale(1.05);
+ }
+ 
+ .review-card {
+-    border: 1px solid #ccc;
+-    /* Or any color you prefer */
+-    margin-bottom: 1rem;
+-    padding: 1rem;
+-    border-radius: 0.5rem;
++  border: 1px solid #ccc;
++  /* Or any color you prefer */
++  margin-bottom: 1rem;
++  padding: 1rem;
++  border-radius: 0.5rem;
+ }
+ 
+ .card a {
+-    text-decoration: none;
++  text-decoration: none;
+ }
+ 
+ .card-img-top {
+-    border-radius: 1rem !important;
+-    width: 100%;
+-    object-fit: cover;
++  border-radius: 1rem !important;
++  width: 100%;
++  object-fit: cover;
+ }
+ 
+ .card-body {
+-    padding: 0 !important;
+-    cursor: pointer;
++  padding: 0 !important;
++  cursor: pointer;
+ }
+ 
+ 
+ 
+ /* add btn for submiting the form  */
+ .add-btn {
+-    background-color: #fe424d !important;
+-    border: none !important;
++  background-color: #fe424d !important;
++  border: none !important;
+ }
+ 
+ /* show-image */
+ .show-img {
+-    height: 30vh;
++  height: 30vh;
+ }
+ 
+ .btns {
+-    display: flex;
+-    gap: 1rem;
+-    align-items: center;
++  display: flex;
++  gap: 1rem;
++  align-items: center;
+ 
+ }
+ 
+ /* Map styling */
+ 
+ #map {
+-    height:400px;
+-    width:100%;
+-    border-radius: 20px;
++  height: 400px;
++  width: 100%;
++  border-radius: 20px;
+ }
+ 
+ /* signup form styling */
+-/* From Uiverse.io by ammarsaa */ 
++/* From Uiverse.io by ammarsaa */
+ .form {
+   display: flex;
+   flex-direction: column;
+@@ -178,7 +203,7 @@ body .container {
+   background: #ffffff;
+   color: #222;
+   border: 1px solid #e8e8e8;
+-  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
++  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+ }
+ 
+ .title {
+@@ -214,7 +239,7 @@ body .container {
+   background-color: #fe424d;
+ }
+ 
+-.message, 
++.message,
+ .signin {
+   font-size: 14.5px;
+   color: #666;
+@@ -259,7 +284,7 @@ body .container {
+   box-shadow: 0 0 0 3px rgba(254, 66, 77, 0.1);
+ }
+ 
+-.form label .input + span {
++.form label .input+span {
+   color: #999;
+   position: absolute;
+   left: 10px;
+@@ -269,13 +294,13 @@ body .container {
+   transition: 0.3s ease;
+ }
+ 
+-.form label .input:placeholder-shown + span {
++.form label .input:placeholder-shown+span {
+   top: 12.5px;
+   font-size: 0.9em;
+ }
+ 
+-.form label .input:focus + span,
+-.form label .input:valid + span {
++.form label .input:focus+span,
++.form label .input:valid+span {
+   color: #fe424d;
+   top: 0px;
+   font-size: 0.7em;
+@@ -320,81 +345,90 @@ body .container {
+ /* ============================================ */
+ /* CREATE LISTING FORM - Premium Dark Theme     */
+ /* ============================================ */
+-.create-listing-form{
++.create-listing-form {
+   background: #ffffff;
+   border-radius: 24px;
+   padding: 2.5rem;
+   color: #222;
+   border: 1px solid #e8e8e8;
+-  box-shadow: 0 10px 40px rgba(0,0,0,0.08);
++  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+ }
++
+ .create-listing-form h3 {
+-    color: #222;
+-    margin-bottom: 1.5rem;
+-    font-weight: 700;
++  color: #222;
++  margin-bottom: 1.5rem;
++  font-weight: 700;
+ }
++
+ .create-listing-form .form-label {
+-    color: #444;
+-    font-weight: 600;
+-    font-size: 0.9rem;
+-    margin-bottom: 0.3rem;
++  color: #444;
++  font-weight: 600;
++  font-size: 0.9rem;
++  margin-bottom: 0.3rem;
+ }
++
+ .create-listing-form .form-control,
+ .create-listing-form .form-select {
+-    background-color: #f8f9fa;
+-    color: #222;
+-    border: 1px solid #ddd;
+-    border-radius: 12px;
+-    padding: 12px 16px;
+-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
++  background-color: #f8f9fa;
++  color: #222;
++  border: 1px solid #ddd;
++  border-radius: 12px;
++  padding: 12px 16px;
++  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+ }
+ 
+ .create-listing-form .form-control:focus,
+ .create-listing-form .form-select:focus {
+-    background-color: #fff;
+-    border-color: #fe424d;
+-    box-shadow: 0 0 0 3px rgba(254, 66, 77, 0.1);
+-    color: #222;
++  background-color: #fff;
++  border-color: #fe424d;
++  box-shadow: 0 0 0 3px rgba(254, 66, 77, 0.1);
++  color: #222;
+ }
++
+ .create-listing-form .form-control::placeholder {
+-    color: #aaa;
++  color: #aaa;
+ }
++
+ .create-listing-form .add-btn {
+-    background: linear-gradient(135deg, #fe424d, #ff6b6b) !important;
+-    border: none !important;
+-    border-radius: 12px;
+-    padding: 14px;
+-    font-size: 1.1rem;
+-    font-weight: 600;
+-    letter-spacing: 0.5px;
+-    transition: transform 0.2s ease, box-shadow 0.3s ease;
++  background: linear-gradient(135deg, #fe424d, #ff6b6b) !important;
++  border: none !important;
++  border-radius: 12px;
++  padding: 14px;
++  font-size: 1.1rem;
++  font-weight: 600;
++  letter-spacing: 0.5px;
++  transition: transform 0.2s ease, box-shadow 0.3s ease;
+ }
++
+ .create-listing-form .add-btn:hover {
+-    transform: translateY(-2px);
+-    box-shadow: 0 8px 25px rgba(254, 66, 77, 0.35);
++  transform: translateY(-2px);
++  box-shadow: 0 8px 25px rgba(254, 66, 77, 0.35);
+ }
++
+ /* File Upload Custom Styling */
+ .create-listing-form input[type="file"] {
+-    background-color: #f8f9fa;
+-    color: #444;
+-    border: 2px dashed #ddd;
+-    border-radius: 12px;
+-    padding: 20px;
+-    cursor: pointer;
+-    transition: border-color 0.3s ease;
++  background-color: #f8f9fa;
++  color: #444;
++  border: 2px dashed #ddd;
++  border-radius: 12px;
++  padding: 20px;
++  cursor: pointer;
++  transition: border-color 0.3s ease;
+ }
++
+ .create-listing-form input[type="file"]:hover {
+-    border-color: #fe424d;
++  border-color: #fe424d;
+ }
++
+ /* Mobile Responsive */
+ @media (max-width: 768px) {
+-    .create-listing-form {
+-        padding: 1.5rem;
+-        border-radius: 16px;
+-        margin: 0 0.5rem;
+-    }
+-    
+-    .create-listing-form h3 {
+-        font-size: 1.3rem;
+-    }
++  .create-listing-form {
++    padding: 1.5rem;
++    border-radius: 16px;
++    margin: 0 0.5rem;
++  }
++
++  .create-listing-form h3 {
++    font-size: 1.3rem;
++  }
+ }
+\ No newline at end of file
+diff --git a/views/includes/navbar.ejs b/views/includes/navbar.ejs
+index a927116..e81ccad 100644
+--- a/views/includes/navbar.ejs
++++ b/views/includes/navbar.ejs
+@@ -2,17 +2,19 @@
+   /* --- Navbar ke liye Custom CSS --- */
+ 
+ 
+-  .search-btn{
++  .search-btn {
+     background-color: #fe424d;
+     color: white;
+     border-radius: 25px;
+     padding: 0 1rem 0 1rem;
+   }
+-  .search-btn i{
++
++  .search-btn i {
+     display: inline;
+     margin-right: 0.5rem;
+   }
+-  .search-input{
++
++  .search-input {
+     border-radius: 25px;
+     padding: 1 3rem 1 3rem;
+     font-size: 1rem;
+@@ -29,7 +31,8 @@
+       --bs-offcanvas-width ek Bootstrap CSS variable hai. Hum iski default value (400px) ko override karke 280px kar rahe hain.
+       !important yeh sunishchit karta hai ki hamari style hi apply ho, chahe Bootstrap ki default style kitni bhi strong ho.
+     */
+-    --bs-offcanvas-width: 280px !important; /* !important yeh sunishchit karta hai ki hamari style hi apply ho. */
++    --bs-offcanvas-width: 280px !important;
++    /* !important yeh sunishchit karta hai ki hamari style hi apply ho. */
+     width: var(--bs-offcanvas-width);
+   }
+ </style>
+@@ -88,25 +91,28 @@
+ 
+       <!-- 2. Center: Search Form (Sirf Desktop par dikhega) -->
+ 
+-      <div class="navbar-nav d-none d-md-flex">
+-        <form class="d-flex" role="search" action="/search" method="GET">
+-          <input class="form-control me-2 search-input" name="searchQuery" type="search" placeholder="Search destinations" aria-label="Search">
+-          <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
+-        </form>
+-      </div>
+-
+-      <!-- 3. Right Side: User links (Sirf Desktop par dikhega) -->
+-
+-      <div class="navbar-nav d-none d-md-flex">
+-        <a class="nav-link" href="/listing/new">Add New One</a>
+-        <% if(!currUser){ %>
+-          <a class="nav-link" aria-current="page" href="/signup"><b>SignUp</b></a>
+-          <a class="nav-link" href="/login"><b>Login</b></a>
++      <% if(typeof showSearch==='undefined' || showSearch !==false) { %>
++        <div class="navbar-nav d-none d-md-flex">
++          <form class="d-flex" role="search" action="/search" method="GET">
++            <input class="form-control me-2 search-input" name="searchQuery" type="search"
++              placeholder="Search destinations" aria-label="Search">
++            <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
++          </form>
++        </div>
+         <% } %>
+-        <% if(currUser){ %>
+-          <a class="nav-link" href="/logout"><b>Logout</b></a>
+-        <% } %>
+-      </div>
++
++          <!-- 3. Right Side: User links (Sirf Desktop par dikhega) -->
++
++          <div class="navbar-nav d-none d-md-flex">
++            <a class="nav-link" href="/listing/new">Add New One</a>
++            <% if(!currUser){ %>
++              <a class="nav-link" aria-current="page" href="/signup"><b>SignUp</b></a>
++              <a class="nav-link" href="/login"><b>Login</b></a>
++              <% } %>
++                <% if(currUser){ %>
++                  <a class="nav-link" href="/logout"><b>Logout</b></a>
++                  <% } %>
++          </div>
+     </div>
+   </div>
+ </nav>
+@@ -119,15 +125,18 @@
+   - .pt-2 .pb-3: Upar se thodi (padding-top) aur neeche se thodi zyada (padding-bottom) jagah deta hai.
+ -->
+ 
+-<div class="container-fluid d-md-none bg-body-light pt-3 pb-3 border-bottom">
+-  <form class="d-flex" role="search" action="/search" method="GET">
+-    <input class="form-control me-2 search-input" name="searchQuery" type="search" placeholder="Search destinations" aria-label="Search">
+-    <!-- Mobile par search button mein sirf icon rakha hai taaki jagah bach sake. -->
+-    <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+-  </form>
+-</div>
++<% if(typeof showSearch==='undefined' || showSearch !==false) { %>
++  <div class="container-fluid d-md-none bg-body-light pt-3 pb-3 border-bottom">
++    <form class="d-flex" role="search" action="/search" method="GET">
++      <input class="form-control me-2 search-input" name="searchQuery" type="search" placeholder="Search destinations"
++        aria-label="Search">
++      <!-- Mobile par search button mein sirf icon rakha hai taaki jagah bach sake. -->
++      <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
++    </form>
++  </div>
++  <% } %>
+ 
+-<!-- 
++    <!-- 
+   OFFCANVAS MOBILE MENU
+   ---------------------
+   Yeh woh side-menu hai jo mobile par hamburger icon click karne par khulta hai.
+@@ -137,27 +146,27 @@
+   - id="offcanvasNavbar": Yeh ID hamburger button ke 'data-bs-target' se match karti hai, jisse Bootstrap ko pata chalta hai ki kaun sa menu kholna hai.
+ -->
+ 
+-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+-  <!-- Offcanvas Header: Menu ka top section, jisme title aur close button hota hai. -->
++    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
++      <!-- Offcanvas Header: Menu ka top section, jisme title aur close button hota hai. -->
+ 
+-  <div class="offcanvas-header">
+-    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Wanderlust</h5>
+-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+-  </div>
+-  <!-- Offcanvas Body: Menu ka main content area, jisme saare links hain. -->
+-
+-  <div class="offcanvas-body">
+-    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+-      <li class="nav-item">
+-        <a class="nav-link" href="/listing/new">Add New One</a>
+-      </li>
+-      <% if(!currUser){ %>
+-        <li class="nav-item"><a class="nav-link" aria-current="page" href="/signup"><b>SignUp</b></a></li>
+-        <li class="nav-item"><a class="nav-link" href="/login"><b>Login</b></a></li>
+-      <% } %>
+-      <% if(currUser){ %>
+-        <li class="nav-item"><a class="nav-link" href="/logout"><b>Logout</b></a></li>
+-      <% } %>
+-    </ul>
+-  </div>
+-</div>
+\ No newline at end of file
++      <div class="offcanvas-header">
++        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Wanderlust</h5>
++        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
++      </div>
++      <!-- Offcanvas Body: Menu ka main content area, jisme saare links hain. -->
++
++      <div class="offcanvas-body">
++        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
++          <li class="nav-item">
++            <a class="nav-link" href="/listing/new">Add New One</a>
++          </li>
++          <% if(!currUser){ %>
++            <li class="nav-item"><a class="nav-link" aria-current="page" href="/signup"><b>SignUp</b></a></li>
++            <li class="nav-item"><a class="nav-link" href="/login"><b>Login</b></a></li>
++            <% } %>
++              <% if(currUser){ %>
++                <li class="nav-item"><a class="nav-link" href="/logout"><b>Logout</b></a></li>
++                <% } %>
++        </ul>
++      </div>
++    </div>
+\ No newline at end of file
+diff --git a/views/layouts/boilerplates.ejs b/views/layouts/boilerplates.ejs
+index 3a3762d..9d822d6 100644
+--- a/views/layouts/boilerplates.ejs
++++ b/views/layouts/boilerplates.ejs
+@@ -28,7 +28,6 @@
+     <%- include("../includes/navbar.ejs") %>
+ 
+         <div class="container">
+-            <br>
+             <%- include("../includes/flash.ejs") %>
+                 <%- body %>
+         </div>
+diff --git a/views/listings/index.ejs b/views/listings/index.ejs
+index 5ab22b9..9f18e03 100644
+--- a/views/listings/index.ejs
++++ b/views/listings/index.ejs
+@@ -10,20 +10,24 @@
+                     width: 100%;
+                     backdrop-filter: blur(8px);
+                     -webkit-backdrop-filter: blur(8px);
+-                    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
++                    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+                     display: flex;
+                     justify-content: space-between;
+                     align-items: center;
+-                    gap: 2rem;
++                    gap: 1rem;
+                     /* Ensures a minimum gap of 2rem between items */
+                     position: sticky;
+-                    top: 80px;
++                    top: 56px;
+                     z-index: 10;
+-                    padding: 8px 2rem;
++                    padding: 10px 24px;
+                     border-bottom: 1px solid #f0f0f0;
+                 }
+ 
+                 #filters {
++                    flex: 1;
++                    /* ÔåÉ YE ADD KARNA HAI! Available space le lega */
++                    min-width: 0;
++                    /* ÔåÉ YE ADD KARNA HAI! Flex overflow allow karega */
+                     display: flex;
+                     flex-wrap: nowrap;
+                     /* Items ko ek hi line mein rakhega */
+@@ -33,9 +37,9 @@
+ 
+                 .filter {
+                     text-align: center;
+-                    margin-right: 2rem;
+-                    margin-top: 1.5rem;
++                    margin-right: 1.5rem;
+                     opacity: 0.7;
++                    padding: 6px 0;
+                 }
+ 
+                 .filter:hover {
+@@ -43,8 +47,31 @@
+                     cursor: pointer;
+                 }
+ 
++                /* ADD this new rule for Airbnb-style underline effect */
++                .filter::after {
++                    content: '';
++                    display: block;
++                    width: 0;
++                    height: 2px;
++                    background: #222;
++                    transition: width 0.3s ease;
++                    margin-top: 4px;
++                }
++
++                .filter:hover::after {
++                    width: 100%;
++                }
++
++                .filter i {
++                    font-size: 0.6rem;
++                    display: block;
++                    color: #717171;
++                }
++
+                 .filter p {
+-                    font-size: 0.8rem;
++                    font-size: 0.6rem;
++                    margin-top: 2px;
++                    margin-bottom: 0
+                 }
+ 
+                 #filters a {
+@@ -54,10 +81,51 @@
+ 
+                 .tax-toggle {
+                     border: 1px solid #e0e0e0;
+-                    /* Halki border */
+-                    padding: 0.5rem 1rem;
+-                    /* Sahi padding */
++                    padding: 0.4rem 0.8rem;
+                     border-radius: 12px;
++                    white-space: nowrap;
++                    /* ÔåÉ Text wrap NAHI hoga! */
++                    flex-shrink: 0;
++                    /* ÔåÉ Compress nahi hoga! */
++                    font-size: 0.75rem;
++                    /* ÔåÉ Chhota text */
++                }
++
++                #filters::-webkit-scrollbar {
++                    display: none;
++                    /* Chrome/Safari me scrollbar hide */
++                }
++
++
++                @media (max-width: 768px) {
++                    .filter-bar {
++                        padding: 4px 6px;
++                        gap: 0.5rem;
++                        width: 100%;
++                    }
++
++                    .filter {
++                        margin-right: 1rem;
++                    }
++
++                    .filter i {
++                        font-size: 0.4rem;
++                    }
++
++                    .filter p {
++                        font-size: 0.4rem;
++                    }
++
++                    .tax-toggle {
++                        font-size: 0.65rem;
++                        padding: 0.3rem 0.6rem;
++                    }
++                }
++
++                @media (max-width: 425px) {
++                    .tax-toggle {
++                        display: none;
++                    }
+                 }
+ 
+                 .taxInfo {

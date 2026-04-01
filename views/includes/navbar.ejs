@@ -2,17 +2,19 @@
   /* --- Navbar ke liye Custom CSS --- */
 
 
-  .search-btn{
+  .search-btn {
     background-color: #fe424d;
     color: white;
     border-radius: 25px;
     padding: 0 1rem 0 1rem;
   }
-  .search-btn i{
+
+  .search-btn i {
     display: inline;
     margin-right: 0.5rem;
   }
-  .search-input{
+
+  .search-input {
     border-radius: 25px;
     padding: 1 3rem 1 3rem;
     font-size: 1rem;
@@ -29,7 +31,8 @@
       --bs-offcanvas-width ek Bootstrap CSS variable hai. Hum iski default value (400px) ko override karke 280px kar rahe hain.
       !important yeh sunishchit karta hai ki hamari style hi apply ho, chahe Bootstrap ki default style kitni bhi strong ho.
     */
-    --bs-offcanvas-width: 280px !important; /* !important yeh sunishchit karta hai ki hamari style hi apply ho. */
+    --bs-offcanvas-width: 280px !important;
+    /* !important yeh sunishchit karta hai ki hamari style hi apply ho. */
     width: var(--bs-offcanvas-width);
   }
 </style>
@@ -88,25 +91,28 @@
 
       <!-- 2. Center: Search Form (Sirf Desktop par dikhega) -->
 
-      <div class="navbar-nav d-none d-md-flex">
-        <form class="d-flex" role="search" action="/search" method="GET">
-          <input class="form-control me-2 search-input" name="searchQuery" type="search" placeholder="Search destinations" aria-label="Search">
-          <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
-        </form>
-      </div>
-
-      <!-- 3. Right Side: User links (Sirf Desktop par dikhega) -->
-
-      <div class="navbar-nav d-none d-md-flex">
-        <a class="nav-link" href="/listing/new">Add New One</a>
-        <% if(!currUser){ %>
-          <a class="nav-link" aria-current="page" href="/signup"><b>SignUp</b></a>
-          <a class="nav-link" href="/login"><b>Login</b></a>
+      <% if(typeof showSearch==='undefined' || showSearch !==false) { %>
+        <div class="navbar-nav d-none d-md-flex">
+          <form class="d-flex" role="search" action="/search" method="GET">
+            <input class="form-control me-2 search-input" name="searchQuery" type="search"
+              placeholder="Search destinations" aria-label="Search">
+            <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
+          </form>
+        </div>
         <% } %>
-        <% if(currUser){ %>
-          <a class="nav-link" href="/logout"><b>Logout</b></a>
-        <% } %>
-      </div>
+
+          <!-- 3. Right Side: User links (Sirf Desktop par dikhega) -->
+
+          <div class="navbar-nav d-none d-md-flex">
+            <a class="nav-link" href="/listing/new">Add New One</a>
+            <% if(!currUser){ %>
+              <a class="nav-link" aria-current="page" href="/signup"><b>SignUp</b></a>
+              <a class="nav-link" href="/login"><b>Login</b></a>
+              <% } %>
+                <% if(currUser){ %>
+                  <a class="nav-link" href="/logout"><b>Logout</b></a>
+                  <% } %>
+          </div>
     </div>
   </div>
 </nav>
@@ -119,15 +125,18 @@
   - .pt-2 .pb-3: Upar se thodi (padding-top) aur neeche se thodi zyada (padding-bottom) jagah deta hai.
 -->
 
-<div class="container-fluid d-md-none bg-body-light pt-3 pb-3 border-bottom">
-  <form class="d-flex" role="search" action="/search" method="GET">
-    <input class="form-control me-2 search-input" name="searchQuery" type="search" placeholder="Search destinations" aria-label="Search">
-    <!-- Mobile par search button mein sirf icon rakha hai taaki jagah bach sake. -->
-    <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
-  </form>
-</div>
+<% if(typeof showSearch==='undefined' || showSearch !==false) { %>
+  <div class="container-fluid d-md-none bg-body-light pt-3 pb-3 border-bottom">
+    <form class="d-flex" role="search" action="/search" method="GET">
+      <input class="form-control me-2 search-input" name="searchQuery" type="search" placeholder="Search destinations"
+        aria-label="Search">
+      <!-- Mobile par search button mein sirf icon rakha hai taaki jagah bach sake. -->
+      <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </form>
+  </div>
+  <% } %>
 
-<!-- 
+    <!-- 
   OFFCANVAS MOBILE MENU
   ---------------------
   Yeh woh side-menu hai jo mobile par hamburger icon click karne par khulta hai.
@@ -137,27 +146,27 @@
   - id="offcanvasNavbar": Yeh ID hamburger button ke 'data-bs-target' se match karti hai, jisse Bootstrap ko pata chalta hai ki kaun sa menu kholna hai.
 -->
 
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-  <!-- Offcanvas Header: Menu ka top section, jisme title aur close button hota hai. -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+      <!-- Offcanvas Header: Menu ka top section, jisme title aur close button hota hai. -->
 
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Wanderlust</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-  <!-- Offcanvas Body: Menu ka main content area, jisme saare links hain. -->
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Wanderlust</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <!-- Offcanvas Body: Menu ka main content area, jisme saare links hain. -->
 
-  <div class="offcanvas-body">
-    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-      <li class="nav-item">
-        <a class="nav-link" href="/listing/new">Add New One</a>
-      </li>
-      <% if(!currUser){ %>
-        <li class="nav-item"><a class="nav-link" aria-current="page" href="/signup"><b>SignUp</b></a></li>
-        <li class="nav-item"><a class="nav-link" href="/login"><b>Login</b></a></li>
-      <% } %>
-      <% if(currUser){ %>
-        <li class="nav-item"><a class="nav-link" href="/logout"><b>Logout</b></a></li>
-      <% } %>
-    </ul>
-  </div>
-</div>
+      <div class="offcanvas-body">
+        <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+          <li class="nav-item">
+            <a class="nav-link" href="/listing/new">Add New One</a>
+          </li>
+          <% if(!currUser){ %>
+            <li class="nav-item"><a class="nav-link" aria-current="page" href="/signup"><b>SignUp</b></a></li>
+            <li class="nav-item"><a class="nav-link" href="/login"><b>Login</b></a></li>
+            <% } %>
+              <% if(currUser){ %>
+                <li class="nav-item"><a class="nav-link" href="/logout"><b>Logout</b></a></li>
+                <% } %>
+        </ul>
+      </div>
+    </div>
