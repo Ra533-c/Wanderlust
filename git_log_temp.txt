@@ -1,0 +1,10 @@
+﻿682cbb5 BACKUP: Before UI redesign - safe point to revert
+056998c signup,add listing , and edit listing layout changed. glassmorphism for navbar .
+5c762cb Add project documentation in README.md
+585b93f Merge pull request #1 from Ra533-c/ui-improvements
+df69025 Add Tailwind CSS v4 and improve listing cards UI
+ebbc2ca Fix the search bar for mobile.
+8bb9cbc feat:sliding window with hamburger menu. overall navebar layout or responsivness fixed.
+e085f8c Deleted some comments and clean some files . connected to atlas .
+2b22f45 feat:mongo Atlas , Search Bar,Filter bar created
+ee22a6d Feat: Implement comprehensive category management system

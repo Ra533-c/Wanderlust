@@ -1,0 +1,5 @@
+﻿views/includes/flash.ejs
+views/includes/footer.ejs
+views/includes/navbar.ejs
+views/layouts/boilerplates.ejs
+views/listings/index.ejs

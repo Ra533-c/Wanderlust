@@ -1,0 +1,6 @@
+﻿ views/includes/flash.ejs       |  38 +++--
+ views/includes/footer.ejs      |  66 ++++++--
+ views/includes/navbar.ejs      | 255 +++++++++++++----------------
+ views/layouts/boilerplates.ejs | 184 ++++++++++++++++++---
+ views/listings/index.ejs       | 360 +++++++++++++++++------------------------
+ 5 files changed, 513 insertions(+), 390 deletions(-)
